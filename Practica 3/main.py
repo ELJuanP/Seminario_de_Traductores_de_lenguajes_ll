@@ -2,7 +2,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 # --------------------------------------------------
-# PALABRAS RESERVADAS (se incluyen 50 para ilustrar)
+# PALABRAS RESERVADAS 
 # --------------------------------------------------
 reserved = {
     'bool': 'BOOL',
@@ -110,14 +110,7 @@ lexer = lex.lex()
 # GRAMÁTICA
 # --------------------------------------------------
 # La estructura del programa es:
-#   program -> decl_list stmt_list
-#
-# Se incluyen declaraciones de variables (por ejemplo, int x;) y sentencias:
-#   - Asignación: ID = expression SEMI
-#   - Condicional: if ( expression ) statement [else statement]
-#   - Bucle while: while ( expression ) statement
-#   - Expresión: expression SEMI
-#   - Bloques: { stmt_list }
+#   program -> decl_list stmt_list (v1)
 #
 def p_program(p):
     'program : decl_list stmt_list'
@@ -133,7 +126,6 @@ def p_decl_list_empty(p):
 
 def p_declaration(p):
     'declaration : type_specifier ID SEMI'
-    # Nodo de declaración: ('declare', tipo, identificador)
     p[0] = ('declare', p[1], p[2])
 
 def p_type_specifier(p):
@@ -180,7 +172,7 @@ def p_assignment(p):
     'assignment : ID ASSIGN expression SEMI'
     p[0] = ('assign', p[1], p[3])
 
-# Expresiones aritméticas: suma, resta
+# Expresiones aritméticas: suma, resta (v1)
 def p_expression_plus(p):
     'expression : expression PLUS term'
     p[0] = ('+', p[1], p[3])
@@ -193,7 +185,7 @@ def p_expression_term(p):
     'expression : term'
     p[0] = p[1]
 
-# Términos: multiplicación, división
+# Términos: multiplicación, división (v1)
 def p_term_times(p):
     'term : term TIMES factor'
     p[0] = ('*', p[1], p[3])
@@ -229,7 +221,6 @@ parser = yacc.yacc()
 # --------------------------------------------------
 # ANÁLISIS SEMÁNTICO
 # --------------------------------------------------
-# Se utiliza un stack de tablas de símbolos para manejar ámbitos.
 symbol_table_stack = [{}]
 
 def current_scope():
@@ -325,7 +316,6 @@ def semantic_analysis(ast):
         raise Exception("Error interno: El nodo raíz debe ser 'program'.")
     decl_list = ast[1]
     stmt_list = ast[2]
-    # Procesa las declaraciones
     for decl in decl_list:
         if decl[0] == 'declare':
             declare_variable(decl[2], str(decl[1]).lower())
@@ -349,7 +339,7 @@ def analyze_code(code):
         print(e)
 
 # --------------------------------------------------
-# EJECUCIÓN INTERACTIVA (manteniendo el formato anterior)
+# EJECUCIÓN INTERACTIVA
 # --------------------------------------------------
 if __name__ == '__main__':
     while True:
